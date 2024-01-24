@@ -1,0 +1,20 @@
+sous_analyse_mesures_id,analyse_name,min,max,unite
+1,Acide urique,2.0,6.0,mg/dL
+2,Albumin√©mie (M√©thode immunologique),3.5,5.5,g/dL
+3,Ammoni√©mie,15,45,¬µmol/L
+4,Bilirubine (Totale Directe et Indirecte),0.2,1.0,mg/dL
+5,Calcium,8.5,10.5,mg/dL
+6,Chlore,98,106,mmol/L
+7,Cr√©atinine,0.6,1.2,mg/dL
+8,Fer s√©rique,70,150,¬µg/dL
+9,Fer s√©rique+C T F,250,450,¬µg/dL
+10,Glyc√©mie,70,100,mg/dL
+11,H√©moglobine glycosyl√©e,4.0,6.0,%
+12,Lithium,0.6,1.2,mmol/L
+13,Magn√©sium plasmatique,1.7,2.2,mg/dL
+14,Magn√©sium erythrocytaire,1.5,2.5,mEq/L
+15,Phosphore min√©ral,2.5,4.5,mg/dL
+16,Prot√©ines,6.4,8.3,g/dL
+17,Potassium,3.5,5.0,mmol/L
+18,Sodium,135,145,mmol/L
+19,Ur√©e,10,20,mg/dL

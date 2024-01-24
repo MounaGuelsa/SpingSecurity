@@ -1,0 +1,27 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
+  datasource:
+    url: jdbc:postgresql://localhost:5432/LabXpert
+    username: postgres
+    password: 50145014
+
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      format_sql: true
+    show-sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/changelog-master.xml
+    enabled: true
+
+logging:
+  level:
+    org.springframework: DEBUG
+
+server:
+  port: 8080
