@@ -48,6 +48,4 @@ public class UtilisateurController {
         return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
     }
 
-
-
 }

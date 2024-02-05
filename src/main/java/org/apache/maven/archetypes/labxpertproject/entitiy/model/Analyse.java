@@ -29,8 +29,8 @@ public class Analyse {
     @Column(name = "DateFinAnalyse")
     private LocalDate dateFinAnalyse;
 
-    @OneToMany(mappedBy = "analyse" )
-    private List<SousAnalyse> sousAnalyses = new ArrayList<>()   ;
+    @OneToMany(mappedBy = "analyse", fetch = FetchType.EAGER)
+    private List<SousAnalyse> sousAnalyses = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "EtatAnalyse")

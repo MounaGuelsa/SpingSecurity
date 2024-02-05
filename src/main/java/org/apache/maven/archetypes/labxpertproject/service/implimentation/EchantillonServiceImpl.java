@@ -88,8 +88,16 @@ public class EchantillonServiceImpl implements IEchantillonService {
     }
 
     private EchantillonDTO mapToDTOWithPatient(Echantillon echantillon) {
+        if (echantillon == null) {
+            return null;
+        }
+
         EchantillonDTO echantillonDTO = modelMapper.map(echantillon, EchantillonDTO.class);
-        echantillonDTO.setPatient(modelMapper.map(echantillon.getPatient(), PatientDTO.class));
+        if (echantillon.getPatient() != null) {
+            echantillonDTO.setPatient(modelMapper.map(echantillon.getPatient(), PatientDTO.class));
+        }
+
         return echantillonDTO;
     }
+
 }

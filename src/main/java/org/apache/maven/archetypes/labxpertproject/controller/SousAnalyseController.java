@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/sousanalyses")
 public class SousAnalyseController {
@@ -55,9 +55,11 @@ public class SousAnalyseController {
         return new ResponseEntity<>(mesures, HttpStatus.OK);
     }
 
-    @GetMapping("/mesures/{sousAnalyseId}/{sousAnalyseMesuresId}")
-    public ResponseEntity<CombinedSousAnalyseDTO> getSousAnalyseMesuresById(@PathVariable Long sousAnalyseId, @PathVariable Long sousAnalyseMesuresId) {
-            CombinedSousAnalyseDTO combinedDTO = sousAnalyseService.getSousAnalyseMesures(sousAnalyseMesuresId, sousAnalyseId);
-        return new ResponseEntity<>(combinedDTO, HttpStatus.OK);
+    @GetMapping("/mesures/{id}")
+    public ResponseEntity<SousAnalyseMesuresDTO> getMesureById(@PathVariable Long id) {
+        SousAnalyseMesuresDTO mesure = sousAnalyseService.getSousAnalyseMesureById(id);
+        return new ResponseEntity<>(mesure, HttpStatus.OK);
     }
+
+
 }

@@ -67,9 +67,9 @@ public class SousAnalyseServiceImpl implements ISousAnalyseService {
                 .collect(Collectors.toList());
     }
 
-    public CombinedSousAnalyseDTO getSousAnalyseMesures(Long souysAnalyseMesuresId, Long sousAnalyseId) {
-        return null;
+    public SousAnalyseMesuresDTO getSousAnalyseMesureById(Long id) {
+        SousAnalyseMesures sousAnalyseMesures = sousAnalyseMesuresRepository.findById(id).orElse(null);
+        return modelMapper.map(sousAnalyseMesures, SousAnalyseMesuresDTO.class);
     }
-
 
 }

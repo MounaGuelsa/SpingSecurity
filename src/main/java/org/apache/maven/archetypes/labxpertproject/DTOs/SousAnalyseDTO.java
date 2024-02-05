@@ -12,16 +12,13 @@ public class SousAnalyseDTO {
 
     private Long sousAnalyseId;
 
-    @NotNull(message = "Valeur must not be null")
     private double valeur;
 
-    @NotNull(message = "SousAnalyseMesures ID must not be null")
 
     private Long sousAnalyseMesuresId;
 
     private SousAnalyseMesuresDTO sousAnalyseMesures;
 
-    @NotNull(message = "StatutDeResultat must not be null")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private StatutDeResultat statutDeResultat;
 

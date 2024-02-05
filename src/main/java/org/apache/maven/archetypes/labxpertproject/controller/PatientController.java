@@ -12,7 +12,7 @@ import org.apache.maven.archetypes.labxpertproject.service.interfaces.IPatientSe
 
 import javax.validation.Valid;
 
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/patient")
 public class PatientController {

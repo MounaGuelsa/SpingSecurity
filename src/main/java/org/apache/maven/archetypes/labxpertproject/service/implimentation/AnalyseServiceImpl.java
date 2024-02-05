@@ -51,7 +51,20 @@ public class AnalyseServiceImpl implements IAnalyseService {
         Analyse analyse = analyseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Analyse not found with id: " + id));
 
-        return modelMapper.map(analyse, AnalyseDTO.class);
+        AnalyseDTO analyseDTO = modelMapper.map(analyse, AnalyseDTO.class);
+
+        // Map sousAnalyses
+        List<SousAnalyseDTO> sousAnalyseDTOs = analyse.getSousAnalyses().stream()
+                .map(sousAnalyse -> {
+                    SousAnalyseDTO sousAnalyseDTO = modelMapper.map(sousAnalyse, SousAnalyseDTO.class);
+                    sousAnalyseDTO.setSousAnalyseMesures(modelMapper.map(sousAnalyse.getSousAnalyseMesures(), SousAnalyseMesuresDTO.class));
+                    return sousAnalyseDTO;
+                })
+                .collect(Collectors.toList());
+
+        analyseDTO.setSousAnalyses(sousAnalyseDTOs);
+
+        return analyseDTO;
     }
 
     public List<AnalyseDTO> getAllAnalyses() {
@@ -62,7 +75,6 @@ public class AnalyseServiceImpl implements IAnalyseService {
     }
 
     public AnalyseDTO addAnalyse(AnalyseDTO analyseDTO) {
-
         long count = analyseRepository.countByEtatAnalyse(StatutDanalyse.EN_COURS_DANALYSE);
         if (count >= 5) {
             throw new RuntimeException("The lab is full");
@@ -78,7 +90,6 @@ public class AnalyseServiceImpl implements IAnalyseService {
                 }
             }
 
-
             Echantillon echantillon = echantillonRepository.findById(analyseDTO.getEchantillonId())
                     .orElseThrow(() -> new EntityNotFoundException("Echantillon not found with id: " + analyseDTO.getEchantillonId()));
             Planification planification = planificationRepository.findById(analyseDTO.getPlanificationId())
@@ -92,18 +103,20 @@ public class AnalyseServiceImpl implements IAnalyseService {
             analyse.setPlanification(planification);
             analyse.setUtilisateur(utilisateur);
 
+            // Save the Analyse entity first
+            analyse = analyseRepository.save(analyse);
+
             List<SousAnalyse> sousAnalyses = new ArrayList<>();
             for (SousAnalyseDTO sousAnalyseDTO : analyseDTO.getSousAnalyses()) {
-                SousAnalyse sousAnalyse = sousAnalyseRepository.findById(sousAnalyseDTO.getSousAnalyseId())
-                        .orElseThrow(() -> new EntityNotFoundException("SousAnalyse not found with id: " + sousAnalyseDTO.getSousAnalyseId()));
-
                 SousAnalyseMesures sousAnalyseMesures = sousAnalyseMesuresRepository.findById(sousAnalyseDTO.getSousAnalyseMesuresId())
                         .orElseThrow(() -> new EntityNotFoundException("SousAnalyseMesures not found with id: " + sousAnalyseDTO.getSousAnalyseMesuresId()));
 
-                StatutDeResultat statutDeResultat = compareValeurWithMinMax(sousAnalyse.getValeur(), sousAnalyseMesures.getMin(), sousAnalyseMesures.getMax());
-                sousAnalyse.setStatutDeResultat(statutDeResultat);
-
+                SousAnalyse sousAnalyse = new SousAnalyse();
+                sousAnalyse.setValeur(sousAnalyseDTO.getValeur());
+                sousAnalyse.setStatutDeResultat(compareValeurWithMinMax(sousAnalyseDTO.getValeur(), sousAnalyseMesures.getMin(), sousAnalyseMesures.getMax()));
                 sousAnalyse.setSousAnalyseMesures(sousAnalyseMesures);
+                sousAnalyse.setAnalyse(analyse); // set the saved Analyse in the SousAnalyse
+                sousAnalyse = sousAnalyseRepository.save(sousAnalyse);
 
                 sousAnalyses.add(sousAnalyse);
             }
@@ -120,26 +133,66 @@ public class AnalyseServiceImpl implements IAnalyseService {
             });
 
             return resultDTO;
-
         }
     }
+    public AnalyseDTO updateAnalyse(Long id, AnalyseDTO analyseDTO) {
+        Analyse existingAnalyse = analyseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Analyse not found with id: " + id));
 
-    public AnalyseDTO updateAnalyse(Long analyseId, AnalyseDTO updatedAnalyseDTO) {
+        Analyse newAnalyse = modelMapper.map(analyseDTO, Analyse.class);
 
-        Analyse existingAnalyse = analyseRepository.findById(analyseId)
-                .orElseThrow(() -> new EntityNotFoundException("Analyse not found with id: " + analyseId));
-
-        if (existingAnalyse.getEtatAnalyse() == StatutDanalyse.TERMINE) {
-            throw new RuntimeException("Cannot update a completed analysis.");
+        if (newAnalyse.getUtilisateur() != null) {
+            existingAnalyse.setUtilisateur(newAnalyse.getUtilisateur());
+        }
+        if (newAnalyse.getDateDebutAnalyse() != null) {
+            existingAnalyse.setDateDebutAnalyse(newAnalyse.getDateDebutAnalyse());
+        }
+        if (newAnalyse.getDateFinAnalyse() != null) {
+            existingAnalyse.setDateFinAnalyse(newAnalyse.getDateFinAnalyse());
+        }
+        if (newAnalyse.getEtatAnalyse() != null) {
+            existingAnalyse.setEtatAnalyse(newAnalyse.getEtatAnalyse());
+        }
+        if (newAnalyse.getCommentaire() != null) {
+            existingAnalyse.setCommentaire(newAnalyse.getCommentaire());
+        }
+        if (newAnalyse.getAnalyseType() != null) {
+            existingAnalyse.setAnalyseType(newAnalyse.getAnalyseType());
+        }
+        if (newAnalyse.getPlanification() != null) {
+            existingAnalyse.setPlanification(newAnalyse.getPlanification());
+        }
+        if (newAnalyse.getEchantillon() != null) {
+            existingAnalyse.setEchantillon(newAnalyse.getEchantillon());
+        }
+        if (newAnalyse.getReactifs() != null) {
+            existingAnalyse.setReactifs(newAnalyse.getReactifs());
         }
 
-        existingAnalyse.setCommentaire(updatedAnalyseDTO.getCommentaire());
+        if (analyseDTO.getSousAnalyses() != null) {
+            for (SousAnalyseDTO sousAnalyseDTO : analyseDTO.getSousAnalyses()) {
+                SousAnalyse existingSousAnalyse = sousAnalyseRepository.findById(sousAnalyseDTO.getSousAnalyseId())
+                        .orElseThrow(() -> new EntityNotFoundException("SousAnalyse not found with id: " + sousAnalyseDTO.getSousAnalyseId()));
+
+                SousAnalyseMesures sousAnalyseMesures = sousAnalyseMesuresRepository.findById(sousAnalyseDTO.getSousAnalyseMesuresId())
+                        .orElseThrow(() -> new EntityNotFoundException("SousAnalyseMesures not found with id: " + sousAnalyseDTO.getSousAnalyseMesuresId()));
+
+                    existingSousAnalyse.setValeur(sousAnalyseDTO.getValeur());
+
+                if (sousAnalyseDTO.getSousAnalyseMesuresId() != null) {
+                    existingSousAnalyse.setSousAnalyseMesures(sousAnalyseMesures);
+                }
+                    existingSousAnalyse.setStatutDeResultat(compareValeurWithMinMax(sousAnalyseDTO.getValeur(), sousAnalyseMesures.getMin(), sousAnalyseMesures.getMax()));
+
+
+                sousAnalyseRepository.save(existingSousAnalyse);
+            }
+        }
 
         Analyse updatedAnalyse = analyseRepository.save(existingAnalyse);
 
         return modelMapper.map(updatedAnalyse, AnalyseDTO.class);
     }
-
 
     public void deleteAnalyse(Long id) {
         Analyse existingAnalyse = analyseRepository.findById(id)

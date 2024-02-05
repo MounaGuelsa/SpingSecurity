@@ -20,6 +20,7 @@ public interface ISousAnalyseService {
 
     List<SousAnalyseMesuresDTO> getAllSousAnalyseMesures();
 
-    CombinedSousAnalyseDTO getSousAnalyseMesures(Long souysAnalyseMesuresId, Long sousAnalyseId);
+     SousAnalyseMesuresDTO getSousAnalyseMesureById(Long id);
+
 }
 

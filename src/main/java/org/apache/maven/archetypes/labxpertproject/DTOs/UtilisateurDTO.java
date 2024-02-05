@@ -38,7 +38,7 @@ public class UtilisateurDTO {
     private RoleDutilisateur roleDutilisateur;
 
 
-    @NotBlank(message = "Informations personalises is required")
+//    @NotBlank(message = "Informations personalises is required")
     private String InformationsPersonalises;
 
     public UtilisateurDTO(String johnDoe, String mail, String s, RoleDutilisateur roleDutilisateur, String someinformation) {
