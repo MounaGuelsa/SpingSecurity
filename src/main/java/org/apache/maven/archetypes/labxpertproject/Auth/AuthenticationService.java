@@ -34,8 +34,7 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         var user = Utilisateur.builder()
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
+                .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
@@ -81,7 +80,7 @@ public class AuthenticationService {
     }
 
     private void revokeAllUserTokens(Utilisateur user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getUtilisateurId());
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {

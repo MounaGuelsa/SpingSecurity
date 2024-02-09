@@ -6,7 +6,13 @@ spring:
     url: jdbc:postgresql://localhost:5432/LabXpert
     username: postgres
     password: 50145014
-
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: f776b4a0b68440d419d1
+            client-secret: 9af46665bcfa1dcdf940480fd0dab26e2d69a89f
 
   jpa:
     hibernate:
